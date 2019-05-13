@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Animateurs{% endblock %}
+
+{% block body %}
+    <h1>Animateurs</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ animateur.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom_animateur</th>
+                <td>{{ animateur.nomAnimateur }}</td>
+            </tr>
+            <tr>
+                <th>Prenom_animateur</th>
+                <td>{{ animateur.prenomAnimateur }}</td>
+            </tr>
+            <tr>
+                <th>DateDeNaissance</th>
+                <td>{{ animateur.DateDeNaissance ? animateur.DateDeNaissance|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('animateurs_index') }}">back to list</a>
+
+    <a href="{{ path('animateurs_edit', {'id': animateur.id}) }}">edit</a>
+
+    {{ include('animateurs/_delete_form.html.twig') }}
+{% endblock %}

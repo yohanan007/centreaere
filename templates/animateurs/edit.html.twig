@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Animateurs{% endblock %}
+
+{% block body %}
+    <h1>Edit Animateurs</h1>
+
+    {{ include('animateurs/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('animateurs_index') }}">back to list</a>
+
+    {{ include('animateurs/_delete_form.html.twig') }}
+{% endblock %}

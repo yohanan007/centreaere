@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Associations index{% endblock %}
+
+{% block body %}
+    <h1>Associations index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom_association</th>
+                <th>Email_association</th>
+                <th>Telephone_association</th>
+                <th>Adresse_association</th>
+                <th>Ville_association</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for association in associations %}
+            <tr>
+                <td>{{ association.id }}</td>
+                <td>{{ association.nomAssociation }}</td>
+                <td>{{ association.emailAssociation }}</td>
+                <td>{{ association.telephoneAssociation }}</td>
+                <td>{{ association.adresseAssociation }}</td>
+                <td>{{ association.villeAssociation }}</td>
+                <td>
+                    <a href="{{ path('associations_show', {'id': association.id}) }}">show</a>
+                    <a href="{{ path('associations_edit', {'id': association.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('associations_new') }}">Create new</a>
+{% endblock %}

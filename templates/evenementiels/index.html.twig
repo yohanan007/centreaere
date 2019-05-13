@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Evenementiels index{% endblock %}
+
+{% block body %}
+    <h1>Evenementiels index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date_evenementiel</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for evenementiel in evenementiels %}
+            <tr>
+                <td>{{ evenementiel.id }}</td>
+                <td>{{ evenementiel.dateEvenementiel ? evenementiel.dateEvenementiel|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('evenementiels_show', {'id': evenementiel.id}) }}">show</a>
+                    <a href="{{ path('evenementiels_edit', {'id': evenementiel.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('evenementiels_new') }}">Create new</a>
+{% endblock %}

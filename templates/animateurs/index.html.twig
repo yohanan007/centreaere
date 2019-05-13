@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Animateurs index{% endblock %}
+
+{% block body %}
+    <h1>Animateurs index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom_animateur</th>
+                <th>Prenom_animateur</th>
+                <th>DateDeNaissance</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for animateur in animateurs %}
+            <tr>
+                <td>{{ animateur.id }}</td>
+                <td>{{ animateur.nomAnimateur }}</td>
+                <td>{{ animateur.prenomAnimateur }}</td>
+                <td>{{ animateur.DateDeNaissance ? animateur.DateDeNaissance|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('animateurs_show', {'id': animateur.id}) }}">show</a>
+                    <a href="{{ path('animateurs_edit', {'id': animateur.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('animateurs_new') }}">Create new</a>
+{% endblock %}
