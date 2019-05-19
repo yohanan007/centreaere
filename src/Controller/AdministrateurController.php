@@ -9,17 +9,32 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Security;
 
 /**
  * @Route("/administrateur")
  */
 class AdministrateurController extends AbstractController
 {
+
+    private $passwordEncoder;
+    private $security;
+
+     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+     {
+         $this->passwordEncoder = $passwordEncoder;
+         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+      
+     }
     /**
      * @Route("/", name="administrateur_index", methods={"GET"})
      */
     public function index(AdministrateurRepository $administrateurRepository): Response
     {
+       
+        $user = $this->getUser();
+
         return $this->render('administrateur/index.html.twig', [
             'administrateurs' => $administrateurRepository->findAll(),
         ]);
@@ -36,6 +51,18 @@ class AdministrateurController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            // recupération de l'utilisateur
+            $user = $administrateur->getUsers();
+            // ajout du rôle 
+            $user->setRoles(["USER_ADMINISTRATEUR"]);
+            // encodage du password
+            $user->setPassword($this->passwordEncoder->encodePassword(
+                             $user,
+                             $user->getPassword()
+                         ));
+            // apres les différentes transformations l'utilisateur ets intégré dans l'administrateur
+            $administrateur->setUsers($user);
+            //var_dump($administrateur->getUsers());
             $entityManager->persist($administrateur);
             $entityManager->flush();
 
@@ -51,11 +78,24 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/{id}", name="administrateur_show", methods={"GET"})
      */
-    public function show(Administrateur $administrateur): Response
+    public function show(Administrateur $administrateur,$id): Response
     {
-        return $this->render('administrateur/show.html.twig', [
+        
+        // recuperation de l'utilisateur courant
+        $user = $this->getUser();
+        // recuperation de l'id utilisateur courant
+        $id_user = $user->getId();
+        // verification du bon id de l'utilisateur
+        if(($id_user === $id)||(in_array('ROLE_SUPER_ADMIN',$user->getRoles())))
+        {
+          return $this->render('administrateur/show.html.twig', [
             'administrateur' => $administrateur,
-        ]);
+        ]);  
+        }else{
+            return redirectToRoute('home');
+        }
+
+        
     }
 
     /**

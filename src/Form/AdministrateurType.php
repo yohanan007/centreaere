@@ -3,6 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Administrateur;
+use App\Entity\User;
+use App\Form\UserType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,7 +23,7 @@ class AdministrateurType extends AbstractType
             ->add('adresse_administrateur')
             ->add('ville_administrateur')
             ->add('pays_administrateur')
-            ->add('users')
+            ->add('users',UserType::class)
         ;
     }
 
