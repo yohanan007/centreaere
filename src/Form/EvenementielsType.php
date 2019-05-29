@@ -13,7 +13,6 @@ class EvenementielsType extends AbstractType
     {
         $builder
             ->add('date_evenementiel')
-            ->add('activites')
         ;
     }
 

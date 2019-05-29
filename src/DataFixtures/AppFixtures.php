@@ -48,6 +48,31 @@ class AppFixtures extends Fixture
 
 
         $manager->persist($administateur);
+  
+
+        $user = new User();
+        $user->setEmail("yohanan_h@gmail.com");
+        $user->setRoles(["ROLE_USER_ADMIN"]);
+        $user->setPassword($this->encoder->encodePassword(
+            $user,
+            "23101981"
+        ));
+
+
+
+        $administateur = new Administrateur();
+        $administateur->setNomAdministrateur("HIRSCHBIS");
+        $administateur->setPrenomAdministrateur("YOHANANBIS");
+        $administateur->setTelephone("0388603469");
+        $administateur->setDateDeNaissanceAdministrateur(NULL);
+        $administateur->setAdresseAdministrateur("18 rue stockholm");
+        $administateur->setVilleAdministrateur("Strasbourg");
+        $administateur->setPaysAdministrateur("France");
+
+        $administateur->setUsers($user);
+
+
+        $manager->persist($administateur);
         $manager->flush();
     }
 }

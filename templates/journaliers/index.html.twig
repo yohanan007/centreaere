@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Journaliers index{% endblock %}
+
+{% block body %}
+    <h1>Journaliers index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date_de_debut_journalier</th>
+                <th>Date_fin_journalier</th>
+                <th>Option_journalier</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for journalier in journaliers %}
+            <tr>
+                <td>{{ journalier.id }}</td>
+                <td>{{ journalier.dateDeDebutJournalier ? journalier.dateDeDebutJournalier|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ journalier.dateFinJournalier ? journalier.dateFinJournalier|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ journalier.optionJournalier }}</td>
+                <td>
+                    <a href="{{ path('journaliers_show', {'id': journalier.id}) }}">show</a>
+                    <a href="{{ path('journaliers_edit', {'id': journalier.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('journaliers_new') }}">Create new</a>
+{% endblock %}

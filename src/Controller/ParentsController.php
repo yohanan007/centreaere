@@ -9,21 +9,47 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Security;
 
 /**
  * @Route("/parents")
  */
 class ParentsController extends AbstractController
 {
+
+
+    private $passwordEncoder;
+    
+    
+
+     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+     {
+         $this->passwordEncoder = $passwordEncoder;   
+     }
+
     /**
      * @Route("/", name="parents_index", methods={"GET"})
      */
     public function index(ParentsRepository $parentsRepository): Response
     {
-        
-        return $this->render('parents/index.html.twig', [
+        $user = $this->getUser();
+        if( in_array("ROLE_SUPER_ADMIN",$user->getRoles()))
+        {
+           return $this->render('parents/index.html.twig', [
             'parents' => $parentsRepository->findAll(),
-        ]);
+        ]); 
+        }elseif (in_array("ROLE_USER_ADMIN",$user->getRoles())) {
+            // recuperation de l'id courant de l'utilisateur 
+            $id_user = $user->getId();
+            return $this->render('parents/index.html.twig', [
+                'parents' => $parentsRepository->find($id_user),
+            ]); 
+        }else {
+             return redirect('home');
+        }
+        
+        
     }
 
     /**
@@ -37,6 +63,15 @@ class ParentsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $user_form = $parent->getUtilisateur();
+            // encodage password
+            $user_form->setPassword($this->passwordEncoder->encodePassword($user_form,$user_form->getPassword()));
+            // role donnée 
+            $user_form->setRoles(["ROLE_USER_PARENT"]);
+            //l'utilisateur du form  est lié au parent form
+            $parent->setUtilisateur($user_form);
+
+
             $entityManager->persist($parent);
             $entityManager->flush();
 

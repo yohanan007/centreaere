@@ -1,4 +1,49 @@
+<div class="card">
+
+    <div class="card-body">
 {{ form_start(form) }}
-    {{ form_widget(form) }}
+{{ form_row(form) }}
+    {#{{ form_row(form.nom_activite) }}
+    {{ form_row(form.typeactivites) }}
+    {{ form_row(form.associations) }}
+    {{ form_label(form.journaliers.vars.prototype, 'Your name') }}
+    {{ form_widget(form.journaliers.vars.prototype) }}#}
+
     <button class="btn">{{ button_label|default('Save') }}</button>
+
 {{ form_end(form) }}
+    </div>
+</div>
+<script>
+   
+        $(document).ready(function(){
+        // modification data-protoype
+        var attr_acti =  $("#activites_journaliers").attr("data-prototype");
+        attr_acti = attr_acti.replace(/__name__label__/gi,"<h5>Option d'activité journaliére</h5>");
+        $("#activites_journaliers").attr("data-prototype",attr_acti);
+
+        var attr_acti_ev =  $("#activites_evenementiels").attr("data-prototype");
+        attr_acti_ev = attr_acti_ev.replace(/__name__label__/gi,"<h5>Option d'évenement</h5>");
+        $("#activites_evenementiels").attr("data-prototype",attr_acti_ev);
+
+            // au départ par défaut on montre les options  activites_journaliers
+            $("#activites_journaliers").html($("#activites_journaliers").attr("data-prototype"));
+            $("#activites_evenementiels").hide();
+                    $("#activites_typeactivites").change(function(e){
+                        // selon les valeurs du select on montre les options voulut
+                            if(this.value == 1){
+                                $("#activites_evenementiels").hide();
+                                $("#activites_evenementiels").html("");
+                                $("#activites_journaliers").html($("#activites_journaliers").attr("data-prototype")).show();
+                                $("#activites_journaliers").show();
+                            }else if(this.value == 2){
+                                $("#activites_journaliers").html("").hide();
+                                $("#activites_evenementiels").html($("#activites_evenementiels").attr("data-prototype")).show();
+                            }
+                    });
+
+        }); 
+
+
+
+</script>

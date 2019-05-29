@@ -36,6 +36,25 @@ class AssociationsRepository extends ServiceEntityRepository
     }
     */
 
+    public function findByAdministrateurId($id) : ?Associations
+    {
+        return $this->createQueryBuilder('a')
+        ->andWhere('a.administateurs_id = :val')
+        ->setParameter('val',$id)
+        ->getQuery()
+        ->getResult();
+    }
+
+   
+    public function findByUserIdRoleAdministrateur($id) 
+    {
+        return $this->createQueryBuilder('a')
+        ->join('a.administrateurs','ad')
+        ->where('ad.users = :val')
+        ->setParameter('val',$id)
+        ->getQuery()
+        ->getResult();
+    }
     /*
     public function findOneBySomeField($value): ?Associations
     {

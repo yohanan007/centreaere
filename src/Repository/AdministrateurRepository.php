@@ -37,6 +37,32 @@ class AdministrateurRepository extends ServiceEntityRepository
     */
 
     /*
+    -------------------------------------------------
+    FUNCTION EN COURS DE CREATION
+    -------------------------------------------------
+    
+    public function findParentByIdAdministrateur($id)
+    {
+        return $this->createQueryBuilder('a')
+                    ->andWhere('a.id = :val')
+                    ->setParameter('val', $id)
+                    ->join('a.associations','ass')
+                    ->addValue('ass')
+                    ->andWhere('ass.administrateur_id = a.id')
+                    ;
+    }
+    */
+
+    public function findByIdUser($id)
+    {
+        return $this->createQueryBuilder('a')
+        ->andWhere('a.users = :val')
+        ->setParameter('val',$id)
+        ->getQuery()
+        ->getResult();
+    }
+
+    /*
     public function findOneBySomeField($value): ?Administrateur
     {
         return $this->createQueryBuilder('a')

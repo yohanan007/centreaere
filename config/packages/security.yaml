@@ -16,6 +16,8 @@ security:
             security: false
         main:
             anonymous: true
+            logout:
+                path: app_logout
             guard:
                 authenticators:
                     - App\Security\LoginFormAuthenticator
@@ -36,4 +38,5 @@ security:
 
     access_control:
         - { path: ^/administrateur, roles: [ROLE_SUPER_ADMIN, ROLE_USER_ADMIN] }
+        - { path: ^/type/activites, roles: [ROLE_SUPER_ADMIN] }
         # - { path: ^/profile, roles: ROLE_USER }

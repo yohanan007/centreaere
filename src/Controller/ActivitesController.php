@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Activites;
+use App\Entity\Administrateur;
+use App\Entity\Journaliers;
 use App\Form\ActivitesType;
+use App\Form\JournaliersType;
 use App\Repository\ActivitesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,12 +33,29 @@ class ActivitesController extends AbstractController
      */
     public function new(Request $request): Response
     {
+        $repository2 = $this->getDoctrine()->getRepository(Administrateur::class);
         $activite = new Activites();
-        $form = $this->createForm(ActivitesType::class, $activite);
+        $admin = new Administrateur();
+        $activite->setAdministrateurs($repository2->findOneBy(['users'=>$this->getUser()]));
+        $form = $this->createForm(ActivitesType::class, $activite,['user'=>$this->getUser()->getId()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $journalier = $activite->getJournaliers();
+            $evenementiel = $activite->getEvenementiels();
+            if($journalier)
+            {
+                foreach ($journalier as $item) {
+                    $item->setActivites($activite);
+                    $entityManager->persist($item);
+                }
+            }elseif ($evenementiel) {
+                foreach ($evenementiel as $item) {
+                    $item->setActivites($activite);
+                    $entityManager->persist($item);
+                }
+            }
             $entityManager->persist($activite);
             $entityManager->flush();
 

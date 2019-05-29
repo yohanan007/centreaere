@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Parents;
+use App\Entity\User;
+use App\Form\UserType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,7 +18,7 @@ class ParentsType extends AbstractType
             ->add('prenom_parent')
             ->add('associations')
             ->add('parents')
-            ->add('utilisateur')
+            ->add('utilisateur',UserType::class)
             ->add('enfants')
         ;
     }

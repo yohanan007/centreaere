@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Journaliers{% endblock %}
+
+{% block body %}
+    <h1>Edit Journaliers</h1>
+
+    {{ include('journaliers/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('journaliers_index') }}">back to list</a>
+
+    {{ include('journaliers/_delete_form.html.twig') }}
+{% endblock %}

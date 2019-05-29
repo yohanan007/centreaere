@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TypeActivites index{% endblock %}
+
+{% block body %}
+    <h1>TypeActivites index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom_type</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for type_activite in type_activites %}
+            <tr>
+                <td>{{ type_activite.id }}</td>
+                <td>{{ type_activite.nomType }}</td>
+                <td>
+                    <a href="{{ path('type_activites_show', {'id': type_activite.id}) }}">show</a>
+                    <a href="{{ path('type_activites_edit', {'id': type_activite.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('type_activites_new') }}">Create new</a>
+{% endblock %}

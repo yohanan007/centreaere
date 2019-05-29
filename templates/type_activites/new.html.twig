@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New TypeActivites{% endblock %}
+
+{% block body %}
+    <h1>Create new TypeActivites</h1>
+
+    {{ include('type_activites/_form.html.twig') }}
+
+    <a href="{{ path('type_activites_index') }}">back to list</a>
+{% endblock %}

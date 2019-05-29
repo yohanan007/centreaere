@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * @Route("/administrateur")
@@ -19,12 +20,12 @@ class AdministrateurController extends AbstractController
 {
 
     private $passwordEncoder;
-    private $security;
+    
 
      public function __construct(UserPasswordEncoderInterface $passwordEncoder)
      {
          $this->passwordEncoder = $passwordEncoder;
-         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+         
       
      }
     /**
@@ -32,6 +33,7 @@ class AdministrateurController extends AbstractController
      */
     public function index(AdministrateurRepository $administrateurRepository): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
        
         $user = $this->getUser();
 
@@ -54,7 +56,7 @@ class AdministrateurController extends AbstractController
             // recupération de l'utilisateur
             $user = $administrateur->getUsers();
             // ajout du rôle 
-            $user->setRoles(["USER_ADMINISTRATEUR"]);
+            $user->setRoles(["ROLE_USER_ADMIN"]);
             // encodage du password
             $user->setPassword($this->passwordEncoder->encodePassword(
                              $user,
@@ -78,21 +80,27 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/{id}", name="administrateur_show", methods={"GET"})
      */
-    public function show(Administrateur $administrateur,$id): Response
+    public function show(AdministrateurRepository $administrateurRepository, Administrateur $administrateur,$id): Response
     {
         
         // recuperation de l'utilisateur courant
         $user = $this->getUser();
         // recuperation de l'id utilisateur courant
         $id_user = $user->getId();
+
+        // recuperation de l'id adminstrateur courant
+        $id_administrateur_courant = $administrateurRepository->findByIdUser($id_user)[0]->getId();
+
         // verification du bon id de l'utilisateur
-        if(($id_user === $id)||(in_array('ROLE_SUPER_ADMIN',$user->getRoles())))
+        if(($id_administrateur_courant == $id)||(in_array('ROLE_SUPER_ADMIN',$user->getRoles())))
         {
+            
           return $this->render('administrateur/show.html.twig', [
             'administrateur' => $administrateur,
         ]);  
         }else{
-            return redirectToRoute('home');
+            return $this->redirectToRoute('homepage');
+      
         }
 
         
@@ -101,23 +109,36 @@ class AdministrateurController extends AbstractController
     /**
      * @Route("/{id}/edit", name="administrateur_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, Administrateur $administrateur): Response
+    public function edit(Request $request, Administrateur $administrateur,AdministrateurRepository $administrateurRepository, $id ): Response
     {
-        $form = $this->createForm(AdministrateurType::class, $administrateur);
-        $form->handleRequest($request);
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        // recuperation de l'id utilisateur courant 
+        $user_id = $this->getUser()->getId();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+        $id_administrateur_courant = $administrateurRepository->findByIdUser($user_id)[0]->getId();
+        if($id_administrateur_courant == $id)
+        {
+            $form = $this->createForm(AdministrateurType::class, $administrateur);
+            $form->handleRequest($request);
 
-            return $this->redirectToRoute('administrateur_index', [
-                'id' => $administrateur->getId(),
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->getDoctrine()->getManager()->flush();
+
+                return $this->redirectToRoute('administrateur_index', [
+                    'id' => $administrateur->getId(),
+                ]);
+            }
+
+            return $this->render('administrateur/edit.html.twig', [
+                'administrateur' => $administrateur,
+                'form' => $form->createView(),
             ]);
         }
+        else {
+             return redirect('/');
+        }
 
-        return $this->render('administrateur/edit.html.twig', [
-            'administrateur' => $administrateur,
-            'form' => $form->createView(),
-        ]);
+       
     }
 
     /**
