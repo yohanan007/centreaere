@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ParentsAssociations{% endblock %}
+
+{% block body %}
+    <h1>ParentsAssociations</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ parents_association.id }}</td>
+            </tr>
+            <tr>
+                <th>Valid</th>
+                <td>{{ parents_association.valid ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('parents_associations_index') }}">back to list</a>
+
+    <a href="{{ path('parents_associations_edit', {'id': parents_association.id}) }}">edit</a>
+
+    {{ include('parents_associations/_delete_form.html.twig') }}
+{% endblock %}

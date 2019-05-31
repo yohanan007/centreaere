@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ParentsAssociations index{% endblock %}
+
+{% block body %}
+    <h1>ParentsAssociations index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Valid</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for parents_association in parents_associations %}
+            <tr>
+                <td>{{ parents_association.id }}</td>
+                <td>{{ parents_association.valid ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('parents_associations_show', {'id': parents_association.id}) }}">show</a>
+                    <a href="{{ path('parents_associations_edit', {'id': parents_association.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('parents_associations_new') }}">Create new</a>
+{% endblock %}

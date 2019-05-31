@@ -18,7 +18,7 @@
     <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="{{ url('homepage') }}">Navbar</a>
+  <a class="navbar-brand" href="{{ url('homepage') }}">centre aere</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -26,18 +26,23 @@
 
 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
     <ul class="navbar-nav">
+
       <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="{{ url('activites_index') }}">activites <span class="sr-only">(current)</span></a>
       </li>
+
       <li class="nav-item">
-        <a class="nav-link" href="#">Features</a>
+        <a class="nav-link" href="{{ url('parents_index')}}">parents</a>
       </li>
+     
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url('associations_index')}}" tabindex="-1" aria-disabled="true">association</a>
+      </li>
+
       <li class="nav-item">
         <a class="nav-link" href="{{ url('app_logout')}}">deconnexion</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-      </li>
+
     </ul>
     {% else %}
     <ul class="navbar-nav">

@@ -54,9 +54,17 @@ class Associations
      */
     private $activites;
 
+  
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ParentsAssociations", mappedBy="associations")
+     */
+    private $parentsAssociations;
+
     public function __construct()
     {
         $this->activites = new ArrayCollection();
+        $this->parentsAssociations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -161,6 +169,37 @@ class Associations
             // set the owning side to null (unless already changed)
             if ($activite->getAssociations() === $this) {
                 $activite->setAssociations(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ParentsAssociations[]
+     */
+    public function getParentsAssociations(): Collection
+    {
+        return $this->parentsAssociations;
+    }
+
+    public function addParentsAssociation(ParentsAssociations $parentsAssociation): self
+    {
+        if (!$this->parentsAssociations->contains($parentsAssociation)) {
+            $this->parentsAssociations[] = $parentsAssociation;
+            $parentsAssociation->setAssociations($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParentsAssociation(ParentsAssociations $parentsAssociation): self
+    {
+        if ($this->parentsAssociations->contains($parentsAssociation)) {
+            $this->parentsAssociations->removeElement($parentsAssociation);
+            // set the owning side to null (unless already changed)
+            if ($parentsAssociation->getAssociations() === $this) {
+                $parentsAssociation->setAssociations(null);
             }
         }
 

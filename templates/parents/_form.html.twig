@@ -1,4 +1,11 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+
+<div class="card p-3 mb-2 bg-dark text-white">
+    <div class="card-body">
+        {{ form_start(form) }}
+             {{ form_widget(form) }} 
+             {#   {{ form_widget(form.ParentsAssociations.vars.prototype)}} #} 
+                <button class="btn">{{ button_label|default('Save') }}</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+

@@ -1,11 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Parents{% endblock %}
+{% block title %}Nouveau parent{% endblock %}
 
 {% block body %}
-    <h1>Create new Parents</h1>
-
-    {{ include('parents/_form.html.twig') }}
-
-    <a href="{{ path('parents_index') }}">back to list</a>
+    <div class="mt-5 p-3 bg-light">
+        <hr>
+        <h3 class=" text-uppercase text-lg-center">Formulaire de création de parent</h3>
+        <hr>
+        {{ include('parents/_form.html.twig') }}
+        <hr>
+        <a href="{{ path('parents_index') }}">back to list</a>
+    </div>
 {% endblock %}

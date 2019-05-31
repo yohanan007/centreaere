@@ -90,7 +90,7 @@ class AssociationsController extends AbstractController
         // role_user_admin
         $user = $this->getUser();
         $user_id = $user->getId();
-        if(in_array('ROLE_USER_ADMIN',$user->getRole()))
+        if(in_array('ROLE_USER_ADMIN',$user->getRoles()))
         {
             
             return $this->render('associations/show.html.twig', [

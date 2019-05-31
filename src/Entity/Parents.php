@@ -28,15 +28,9 @@ class Parents
      */
     private $prenom_parent;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Parents", inversedBy="parents")
-     */
-    private $associations;
+  
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Parents", mappedBy="associations")
-     */
-    private $parents;
+
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
@@ -49,11 +43,16 @@ class Parents
      */
     private $enfants;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ParentsAssociations", mappedBy="parents")
+     */
+    private $parentsAssociations;
+
     public function __construct()
     {
-        $this->associations = new ArrayCollection();
-        $this->parents = new ArrayCollection();
+
         $this->enfants = new ArrayCollection();
+        $this->parentsAssociations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -174,6 +173,37 @@ class Parents
         if ($this->enfants->contains($enfant)) {
             $this->enfants->removeElement($enfant);
             $enfant->removeParent($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ParentsAssociations[]
+     */
+    public function getParentsAssociations(): Collection
+    {
+        return $this->parentsAssociations;
+    }
+
+    public function addParentsAssociation(ParentsAssociations $parentsAssociation): self
+    {
+        if (!$this->parentsAssociations->contains($parentsAssociation)) {
+            $this->parentsAssociations[] = $parentsAssociation;
+            $parentsAssociation->setParents($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParentsAssociation(ParentsAssociations $parentsAssociation): self
+    {
+        if ($this->parentsAssociations->contains($parentsAssociation)) {
+            $this->parentsAssociations->removeElement($parentsAssociation);
+            // set the owning side to null (unless already changed)
+            if ($parentsAssociation->getParents() === $this) {
+                $parentsAssociation->setParents(null);
+            }
         }
 
         return $this;

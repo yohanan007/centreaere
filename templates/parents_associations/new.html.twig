@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ParentsAssociations{% endblock %}
+
+{% block body %}
+    <h1>Create new ParentsAssociations</h1>
+
+    {{ include('parents_associations/_form.html.twig') }}
+
+    <a href="{{ path('parents_associations_index') }}">back to list</a>
+{% endblock %}
