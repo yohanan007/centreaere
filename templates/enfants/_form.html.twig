@@ -1,4 +1,13 @@
-{{ form_start(form) }}
+
+<div class="card mt-5 p-3 bg-secondary  text-light ">
+    <div class="card-header text-dark">
+        <h4 class="text-uppercase">formulaire d'inscription enfant</h4>
+    </div>
+    <div class="card-body">
+        {{ form_start(form) }}
     {{ form_widget(form) }}
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
+    </div>
+</div>
+

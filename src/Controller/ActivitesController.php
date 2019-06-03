@@ -23,9 +23,22 @@ class ActivitesController extends AbstractController
      */
     public function index(ActivitesRepository $activitesRepository): Response
     {
-        return $this->render('activites/index.html.twig', [
-            'activites' => $activitesRepository->findAll(),
-        ]);
+        $user = $this->getUser();
+        if(in_array('USER_ROLE_PARENT',$user->getRoles()))
+        {
+            return $this->render('activites/index.html.twig', [
+                'activites' => $activitesRepository->findByIdUserRoleParent($user->getId()),
+            ]); 
+        }
+        elseif(in_array('ROLE_USER_ADMIN',$user->getRoles()))
+        {
+            return $this->render('activites/index.html.twig', [
+                        'activites' => $activitesRepository->findByIdUserRoleAdmin($user->getId()),
+                    ]);
+        }else {
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -44,13 +57,18 @@ class ActivitesController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $journalier = $activite->getJournaliers();
             $evenementiel = $activite->getEvenementiels();
-            if($journalier)
+            var_dump($journalier->first());
+            var_dump($evenementiel->first());
+            if($journalier->first() != false)
             {
+                var_dump('journalier');
+                
                 foreach ($journalier as $item) {
                     $item->setActivites($activite);
                     $entityManager->persist($item);
                 }
-            }elseif ($evenementiel) {
+            }elseif ($evenementiel->first() != false) {
+                var_dump('evenementiel');
                 foreach ($evenementiel as $item) {
                     $item->setActivites($activite);
                     $entityManager->persist($item);

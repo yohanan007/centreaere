@@ -3,8 +3,8 @@
 {% block title %}ParentsAssociations index{% endblock %}
 
 {% block body %}
-    <h1>ParentsAssociations index</h1>
-
+    <h5 class="mt-2">liste de vos associations</h5>
+   {% if is_granted('ROLE_ADMIN') %} 
     <table class="table">
         <thead>
             <tr>
@@ -32,4 +32,46 @@
     </table>
 
     <a href="{{ path('parents_associations_new') }}">Create new</a>
+    {% else %}
+    <div class="card p-5 mt-5">
+        <div class="card-header">
+            <h4>listes association</h4>
+        </div>
+        <div class="card-body">
+              
+                         
+                       
+       
+        {% for parent in parents_associations  %} 
+             {{ parent.id }}
+             <table class="table">
+                    <caption>List of users</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">nom </th>
+                        <th scope="col">adresse </th>
+                        <th scope="col">email</th>
+                        <th scope="col">  | </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                {% for association in parent.parentsAssociations %}
+                     
+                <tr>
+                        <th scope="row"> - </th>
+                        <td>  {{ association.associations.nomAssociation }}</td>
+                        <td>  {{ association.associations.adresseAssociation }}  {{ association.associations.villeAssociation }} </td>
+                        <td>{{ association.associations.emailAssociation }} </td>
+                        <td> <a href="{{ url('associations_show',{'id':association.associations.id } ) }}">plus d'info</a> </td>
+                      </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

@@ -38,9 +38,26 @@ class Enfants
      */
     private $parents;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
+     */
+    private $user;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Activites", inversedBy="enfants")
+     */
+    private $activites;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ActivitesEnfants", mappedBy="enfants")
+     */
+    private $activitesEnfants;
+
     public function __construct()
     {
         $this->parents = new ArrayCollection();
+        $this->activites = new ArrayCollection();
+        $this->activitesEnfants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,6 +122,75 @@ class Enfants
     {
         if ($this->parents->contains($parent)) {
             $this->parents->removeElement($parent);
+        }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Activites[]
+     */
+    public function getActivites(): Collection
+    {
+        return $this->activites;
+    }
+
+    public function addActivite(Activites $activite): self
+    {
+        if (!$this->activites->contains($activite)) {
+            $this->activites[] = $activite;
+        }
+
+        return $this;
+    }
+
+    public function removeActivite(Activites $activite): self
+    {
+        if ($this->activites->contains($activite)) {
+            $this->activites->removeElement($activite);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ActivitesEnfants[]
+     */
+    public function getActivitesEnfants(): Collection
+    {
+        return $this->activitesEnfants;
+    }
+
+    public function addActivitesEnfant(ActivitesEnfants $activitesEnfant): self
+    {
+        if (!$this->activitesEnfants->contains($activitesEnfant)) {
+            $this->activitesEnfants[] = $activitesEnfant;
+            $activitesEnfant->setEnfants($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivitesEnfant(ActivitesEnfants $activitesEnfant): self
+    {
+        if ($this->activitesEnfants->contains($activitesEnfant)) {
+            $this->activitesEnfants->removeElement($activitesEnfant);
+            // set the owning side to null (unless already changed)
+            if ($activitesEnfant->getEnfants() === $this) {
+                $activitesEnfant->setEnfants(null);
+            }
         }
 
         return $this;

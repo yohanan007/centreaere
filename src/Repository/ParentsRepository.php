@@ -36,6 +36,20 @@ class ParentsRepository extends ServiceEntityRepository
     }
     */
 
+    public function findByIdUserInfoAssociation($id)
+    {
+        return $this->createQueryBuilder('p')
+        ->join('p.parentsAssociations', 'pa')
+        ->andWhere('p.utilisateur = :val')
+        ->setParameter('val',$id)
+        ->addSelect('pa')
+        ->join('pa.associations','a')
+        ->addSelect('a')
+        ->getQuery()
+        ->getResult()
+        ;
+    }
+
     /*
     public function findOneBySomeField($value): ?Parents
     {

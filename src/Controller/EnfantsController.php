@@ -3,18 +3,31 @@
 namespace App\Controller;
 
 use App\Entity\Enfants;
+use App\Entity\Parents;
 use App\Form\EnfantsType;
 use App\Repository\EnfantsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @Route("/enfants")
  */
 class EnfantsController extends AbstractController
 {
+
+    private $passwordEncoder;
+    
+
+     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+     {
+         $this->passwordEncoder = $passwordEncoder;
+     }
+
     /**
      * @Route("/", name="enfants_index", methods={"GET"})
      */
@@ -30,22 +43,46 @@ class EnfantsController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $enfant = new Enfants();
-        $form = $this->createForm(EnfantsType::class, $enfant);
-        $form->handleRequest($request);
+        $user = $this->getUser();
+        if(in_array('USER_ROLE_PARENT',$user->getRoles()))
+        {
+            $enfant = new Enfants();
+            $parent_user = $this->getDoctrine()->getRepository(Parents::class)->findOneBy(['utilisateur'=>$this->getUser()]);
+           // var_dump($parent_user);
+            $form = $this->createForm(EnfantsType::class, $enfant);
+            $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($enfant);
-            $entityManager->flush();
+            if ($form->isSubmitted() && $form->isValid()) {
+                $entityManager = $this->getDoctrine()->getManager();
 
-            return $this->redirectToRoute('enfants_index');
+                $user_enfant_en_cours =  $enfant->getUser();
+                $user_enfant_en_cours->setRoles(["USER_ROLE_ENFANT"]);
+
+                $user_enfant_en_cours->setPassword($this->passwordEncoder->encodePassword(
+                    $user_enfant_en_cours,
+                    $user_enfant_en_cours->getPassword()
+                ));
+
+                $enfant->setUser($user_enfant_en_cours);
+                $enfant->addParent($parent_user);
+
+                $entityManager->persist($user_enfant_en_cours);
+                $entityManager->persist($enfant);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('enfants_index');
         }
 
-        return $this->render('enfants/new.html.twig', [
-            'enfant' => $enfant,
-            'form' => $form->createView(),
-        ]);
+            return $this->render('enfants/new.html.twig', [
+                'enfant' => $enfant,
+                'form' => $form->createView(),
+            ]);
+        }
+        // fin condition rôle
+        else {
+            return $this->redirectToRoute('homepage');
+        }
+       
     }
 
     /**

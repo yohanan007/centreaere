@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ActivitesEnfants index{% endblock %}
+
+{% block body %}
+    <h1>ActivitesEnfants index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Valid</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for activites_enfant in activites_enfants %}
+            <tr>
+                <td>{{ activites_enfant.id }}</td>
+                <td>{{ activites_enfant.valid ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('activites_enfants_show', {'id': activites_enfant.id}) }}">show</a>
+                    <a href="{{ path('activites_enfants_edit', {'id': activites_enfant.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('activites_enfants_new') }}">Create new</a>
+{% endblock %}

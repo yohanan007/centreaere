@@ -32,7 +32,7 @@ class AssociationsController extends AbstractController
 
     /**
      * @Route("/", name="associations_index", methods={"GET"})
-     * @IsGranted("ROLE_USER_ADMIN")
+     * @IsGranted("ROLE_USER_ADMIN",message="vous n'êtes pas authorisé")
      */
     public function index(AssociationsRepository $associationsRepository): Response
     {
@@ -98,12 +98,13 @@ class AssociationsController extends AbstractController
             ]); 
         }
         else{
-            return $this->redirectRouteTo('homepage');
+            return  $this->redirectToRoute('homepage');
         }
     }
 
     /**
      * @Route("/{id}/edit", name="associations_edit", methods={"GET","POST"})
+     * @IsGranted("ROLE_USER_ADMIN", message="No access! Get out!")
      */
     public function edit(Request $request, Associations $association): Response
     {
@@ -126,6 +127,7 @@ class AssociationsController extends AbstractController
 
     /**
      * @Route("/{id}", name="associations_delete", methods={"DELETE"})
+     * @IsGranted("ROLE_USER_ADMIN", message="No access! Get out!")
      */
     public function delete(Request $request, Associations $association): Response
     {

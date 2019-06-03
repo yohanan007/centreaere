@@ -46,10 +46,8 @@ class ParentsController extends AbstractController
                 'parents' => $parentsRepository->find($id_user),
             ]); 
         }else {
-             return redirect('home');
+             return  $this->redirectToRoute('homepage');
         }
-        
-        
     }
 
     /**

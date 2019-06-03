@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ActivitesEnfants{% endblock %}
+
+{% block body %}
+    <h1>Create new ActivitesEnfants</h1>
+
+    {{ include('activites_enfants/_form.html.twig') }}
+
+    <a href="{{ path('activites_enfants_index') }}">back to list</a>
+{% endblock %}

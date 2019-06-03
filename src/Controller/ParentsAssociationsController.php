@@ -5,28 +5,54 @@ namespace App\Controller;
 use App\Entity\ParentsAssociations;
 use App\Form\ParentsAssociationsType;
 use App\Repository\ParentsAssociationsRepository;
+use App\Entity\Parents;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
 
 /**
  * @Route("/parents/associations")
+ * @IsGranted("IS_AUTHENTICATED_FULLY", message="No access! Get out!")
  */
 class ParentsAssociationsController extends AbstractController
 {
+
+    private $passwordEncoder;
+    
+
+     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+     {
+         $this->passwordEncoder = $passwordEncoder;
+     }
+
     /**
      * @Route("/", name="parents_associations_index", methods={"GET"})
      */
     public function index(ParentsAssociationsRepository $parentsAssociationsRepository): Response
     {
-        return $this->render('parents_associations/index.html.twig', [
+        if(in_array('USER_ROLE_PARENT',$this->getUser()->getRoles()))
+        {
+            $parentsRepository = $this->getDoctrine()->getRepository(Parents::class);
+            $parentsAssociation = $parentsRepository->findByIdUserInfoAssociation($this->getUser()->getId());
+            return $this->render('parents_associations/index.html.twig', [
+                'parents_associations' => $parentsAssociation,
+            ]);
+        }else {
+             return $this->render('parents_associations/index.html.twig', [
             'parents_associations' => $parentsAssociationsRepository->findAll(),
-        ]);
+        ]);# code...
+        }
+       
     }
 
     /**
      * @Route("/new", name="parents_associations_new", methods={"GET","POST"})
+     * @IsGranted("ROLE_USER_ADMIN", message="No access! Get out!")
      */
     public function new(Request $request): Response
     {
@@ -36,7 +62,22 @@ class ParentsAssociationsController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            // récupération de l'utilisateur en cours d'inscription
+            $user_inscription = $parentsAssociation->getParents()->getUtilisateur();
+            // on donne un rôle
+            $user_inscription->setRoles(["USER_ROLE_PARENT"]);
+            // encodage du password dans la base de donnée
+            $user_inscription->setPassword($this->passwordEncoder->encodePassword(
+                $user_inscription,
+                $user_inscription->getPassword()
+            ));
+
+            // persistence des données 
+            $entityManager->persist($user_inscription);
+            $entityManager->persist($parentsAssociation->getParents());
             $entityManager->persist($parentsAssociation);
+
+            // enregistrement des données
             $entityManager->flush();
 
             return $this->redirectToRoute('parents_associations_index');

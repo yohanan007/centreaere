@@ -47,4 +47,38 @@ class ActivitesRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findByIdUserRoleParent($id)
+    {
+        return $this->createQueryBuilder('a')
+        ->join('a.associations','ass')
+        ->addSelect('ass')
+        ->join('ass.parentsAssociations','pa')
+        ->addSelect('pa')
+        ->join('pa.parents','par')
+        ->addSelect('par')
+        ->join('par.utilisateur','uti')
+        ->addSelect('uti')
+        ->andWhere('uti.id = :var')
+        ->setParameter('var',$id)
+        ->getQuery()
+        ->getResult()
+        ;
+    }
+
+    public function findByIdUserRoleAdmin($id)
+    {
+        return $this->createQueryBuilder('a')
+        ->join('a.associations','ass')
+        ->addSelect('ass')
+        ->join('ass.administrateurs','admin')
+        ->addSelect('admin')
+        ->join('admin.users','util')
+        ->addSelect('util')
+        ->andWhere('util.id = :var')
+        ->setParameter('var',$id)
+        ->getQuery()
+        ->getResult()
+        ;
+    }
 }
