@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -30,6 +32,18 @@ class ActivitesEnfants
      * @ORM\ManyToOne(targetEntity="App\Entity\Activites", inversedBy="activitesEnfants")
      */
     private $activites;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\JourActivite", inversedBy="activitesEnfants")
+     */
+    private $jours;
+
+   
+
+    public function __construct()
+    {
+        $this->jours = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -71,4 +85,33 @@ class ActivitesEnfants
 
         return $this;
     }
+
+    /**
+     * @return Collection|JourActivite[]
+     */
+    public function getJours(): Collection
+    {
+        return $this->jours;
+    }
+
+    public function addJour(JourActivite $jour): self
+    {
+        if (!$this->jours->contains($jour)) {
+            $this->jours[] = $jour;
+        }
+
+        return $this;
+    }
+
+    public function removeJour(JourActivite $jour): self
+    {
+        if ($this->jours->contains($jour)) {
+            $this->jours->removeElement($jour);
+        }
+
+        return $this;
+    }
+
+    
+
 }

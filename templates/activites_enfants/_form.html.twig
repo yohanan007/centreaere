@@ -2,3 +2,36 @@
     {{ form_widget(form) }}
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
+
+{% block javascripts %}
+ <script language = "javascript" 
+      src = "https://code.jquery.com/jquery-2.2.4.min.js"></script> 
+<script>
+var $sport = $('#activites_enfants_activites');
+// When sport gets selected ...
+$sport.change(function() {
+    console.log("coucou");
+  // ... retrieve the corresponding form.
+  var $form = $(this).closest('form');
+  // Simulate form data, but only include the selected sport value.
+  var data = {};
+  data[$sport.attr('name')] = $sport.val();
+  // Submit data via AJAX to the form's action path.
+  console.log($form.attr('action'));
+  console.log($form.attr('method'));
+  
+  $.post(
+    $form.attr('action'),
+     data).done
+      (function(html){
+      // Replace current position field ...
+      $('#activites_enfants_jours').replaceWith(
+        // ... with the returned one from the AJAX response.
+        $(html).find('#activites_enfants_jours')
+      );
+      // Position field now displays the appropriate positions.
+    }
+      ).fail(function(error){console.log("erreur:");  console.log(error);});
+});
+</script>
+ {% endblock %}

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Activites;
 use App\Entity\Administrateur;
 use App\Entity\Journaliers;
+use App\Entity\JourActivite;
 use App\Form\ActivitesType;
 use App\Form\JournaliersType;
 use App\Repository\ActivitesRepository;
@@ -49,6 +50,7 @@ class ActivitesController extends AbstractController
         $repository2 = $this->getDoctrine()->getRepository(Administrateur::class);
         $activite = new Activites();
         $admin = new Administrateur();
+        
         $activite->setAdministrateurs($repository2->findOneBy(['users'=>$this->getUser()]));
         $form = $this->createForm(ActivitesType::class, $activite,['user'=>$this->getUser()->getId()]);
         $form->handleRequest($request);
@@ -64,9 +66,49 @@ class ActivitesController extends AbstractController
                 var_dump('journalier');
                 
                 foreach ($journalier as $item) {
+
+                    // à verifier
+
+                    // date de debut de l'activité
+                    $date_de_debut = $item->getDateDeDebutJournalier(); 
+                    // date de fin de l'activité 
+                    $date_de_fin  = $item->getDateFinJournalier();
+
+                      // inscription des jours d'activités 
+                    // permet de s'inscrire à différents jours d'actiivtés
+
+                    $i = $date_de_debut;
+                    $j = $i->format('Y-m-d');
+                    $k = new \DateTime($j);
+                    $jourActivite = new JourActivite();
+                    
+                    $jourActivite->setJour($k);
+                    $jourActivite->setActivites($activite);
+                    $entityManager->persist($jourActivite);
+
+                   
+                    while($j !== $date_de_fin->format('Y-m-d'))
+                    {
+                        // inscription des jours d'activités 
+                        // permet de s'inscrire à différents jours d'actiivtés
+                        $i->modify("+1 days");
+                        // changer objet au niveau jour 
+                        $j = $i->format('Y-m-d');
+                        $k = new \DateTime($j);
+                        $jourActivite = new JourActivite();
+                        
+                        $jourActivite->setJour($k);
+                        $jourActivite->setActivites($activite);
+                        $entityManager->persist($jourActivite);
+                    }
+
+
+                    
                     $item->setActivites($activite);
                     $entityManager->persist($item);
                 }
+
+                
             }elseif ($evenementiel->first() != false) {
                 var_dump('evenementiel');
                 foreach ($evenementiel as $item) {

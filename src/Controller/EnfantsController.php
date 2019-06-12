@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Enfants;
 use App\Entity\Parents;
+use App\Entity\ActivitesEnfants;
+use App\Form\ActivitesEnfantsChildType;
 use App\Form\EnfantsType;
 use App\Repository\EnfantsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,9 +35,16 @@ class EnfantsController extends AbstractController
      */
     public function index(EnfantsRepository $enfantsRepository): Response
     {
-        return $this->render('enfants/index.html.twig', [
-            'enfants' => $enfantsRepository->findAll(),
-        ]);
+        $user = $this->getUser();
+        if(in_array('USER_ROLE_PARENT',$user->getRoles()))
+        {
+           return $this->render('enfants/index.html.twig', [
+            'enfants' => $enfantsRepository->findByIdUserRoleParent($user->getId()),
+        ]); 
+        }else{
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -90,8 +99,14 @@ class EnfantsController extends AbstractController
      */
     public function show(Enfants $enfant): Response
     {
+        $user = $this->getUser();
+        $activiteEnfant = new ActivitesEnfants();
+
+        $form = $this->createForm(ActivitesEnfantsChildType::class, $activiteEnfant,['utilisateur_id'=>$user->getId(),]); 
+
         return $this->render('enfants/show.html.twig', [
             'enfant' => $enfant,
+            'form'=> $form->createView(), 
         ]);
     }
 
@@ -129,5 +144,25 @@ class EnfantsController extends AbstractController
         }
 
         return $this->redirectToRoute('enfants_index');
+    }
+
+
+    /**
+     * @Route("/inscription/{id}", name="enfants_inscription", methods={"POST"})
+     */
+    public function inscription(Request $request): Response
+    {
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $enfant = $this->getDoctrine()->getRepository(Enfants::class)->findOneBy(['id'=>$id]);
+            $activiteEnfant = $request->getData();
+            $activiteEnfant->setEnfants($enfant);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($activiteEnfant);
+            $entityManager->flush();
+        }
+        return $this->redirectToRoute('enfants_show',array('id'=>$id));
     }
 }

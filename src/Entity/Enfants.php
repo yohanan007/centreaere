@@ -195,4 +195,8 @@ class Enfants
 
         return $this;
     }
+
+    public function __toString(){
+        return $this->nom_enfant." ".$this->prenom_enfant;
+    }
 }

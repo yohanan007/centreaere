@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/activites/enfants")
+ * @Route("/activite/enfants")
  */
 class ActivitesEnfantsController extends AbstractController
 {
@@ -20,9 +20,22 @@ class ActivitesEnfantsController extends AbstractController
      */
     public function index(ActivitesEnfantsRepository $activitesEnfantsRepository): Response
     {
-        return $this->render('activites_enfants/index.html.twig', [
+        $user = $this->getUser();
+        if(in_array("USER_ROLE_PARENT",$user->getRoles()))
+        {
+            #role parent 
+           return $this->render('activites_enfants/index.html.twig', [
             'activites_enfants' => $activitesEnfantsRepository->findAll(),
-        ]);
+        ]); 
+        }elseif (in_array("USER_ROLE_ADMINISTRATEUR")) {
+            # code...role administrateur
+            return $this->render('activites_enfants/index.html.twig', [
+                'activites_enfants' => $activitesEnfantsRepository->findAll(),
+            ]);
+        }else {
+            return $this->redirectToRoute('homepage');
+        }
+        
     }
 
     /**
@@ -31,11 +44,12 @@ class ActivitesEnfantsController extends AbstractController
     public function new(Request $request): Response
     {
         $activitesEnfant = new ActivitesEnfants();
-        $form = $this->createForm(ActivitesEnfantsType::class, $activitesEnfant);
+        $form = $this->createForm(ActivitesEnfantsType::class, $activitesEnfant, ['utilisateur_id'=>$this->getUser()->getId()]);
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+           
             $entityManager->persist($activitesEnfant);
             $entityManager->flush();
 

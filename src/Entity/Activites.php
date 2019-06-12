@@ -63,6 +63,11 @@ class Activites
      */
     private $activitesEnfants;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\JourActivite", mappedBy="activites")
+     */
+    private $jourActivites;
+
     public function __construct()
     {
         $this->journaliers = new ArrayCollection();
@@ -70,6 +75,7 @@ class Activites
         $this->images = new ArrayCollection();
         $this->enfants = new ArrayCollection();
         $this->activitesEnfants = new ArrayCollection();
+        $this->jourActivites = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -271,6 +277,37 @@ class Activites
             // set the owning side to null (unless already changed)
             if ($activitesEnfant->getActivites() === $this) {
                 $activitesEnfant->setActivites(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|JourActivite[]
+     */
+    public function getJourActivites(): Collection
+    {
+        return $this->jourActivites;
+    }
+
+    public function addJourActivite(JourActivite $jourActivite): self
+    {
+        if (!$this->jourActivites->contains($jourActivite)) {
+            $this->jourActivites[] = $jourActivite;
+            $jourActivite->setActivites($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJourActivite(JourActivite $jourActivite): self
+    {
+        if ($this->jourActivites->contains($jourActivite)) {
+            $this->jourActivites->removeElement($jourActivite);
+            // set the owning side to null (unless already changed)
+            if ($jourActivite->getActivites() === $this) {
+                $jourActivite->setActivites(null);
             }
         }
 

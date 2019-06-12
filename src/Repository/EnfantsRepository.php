@@ -47,4 +47,18 @@ class EnfantsRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findByIdUserRoleParent($id)
+    {
+        return $this->createQueryBuilder('e')
+        ->join('e.parents','pa')
+        ->addSelect('pa')
+        ->join('pa.utilisateur','util')
+        ->addSelect('util')
+        ->andWhere('util.id = :var')
+        ->setParameter('var',$id)
+        ->getQuery()
+        ->getResult()
+        ;
+    }
 }
