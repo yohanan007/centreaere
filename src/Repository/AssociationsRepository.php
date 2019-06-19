@@ -55,6 +55,51 @@ class AssociationsRepository extends ServiceEntityRepository
         ->getQuery()
         ->getResult();
     }
+
+    public function findByUserIdRoleParent($id)
+    {
+        return $this->createQueryBuilder('a')
+        ->join('a.parentsAssociations','pa')
+        ->addSelect('pa')
+        ->join('pa.parents','p')
+        ->addSelect('p')
+        ->andWhere('p.utilisateur = :var')
+        ->setParameter('var',$id)
+        ->getQuery()
+        ->getResult()
+        ;
+    }
+
+    function findbyidUserParentAndIdAssociation($id_user, $id_association)
+    {
+        return $this->createQueryBuilder('a')
+                    ->andWhere('a.id = :association')
+                    ->setParameter('association',$id_association)
+                    ->join('a.parentsAssociations','pa')
+                    ->addSelect('pa')
+                    ->join('pa.parents','p')
+                    ->addSelect('p')
+                    ->andWhere('p.utilisateur = :user')
+                    ->setParameter('user',$id_user)
+                    ->getQuery()
+                    ->getResult()
+                    ;
+    }
+
+    function findbyidUserAdministrateurAndIdAssociation($id_user, $id_association)
+    {
+        return $this->createQueryBuilder('a')
+                    ->andWhere('a.id = :association')
+                    ->setParameter('association',$id_association)
+                    ->join('a.administrateurs','admin')
+                    ->addSelect('admin')
+                    ->andWhere('admin.users = :admin')
+                    ->setParameter('admin',$id_user)
+                    ->getQuery()
+                    ->getResult()
+                    ;
+    }
+
     /*
     public function findOneBySomeField($value): ?Associations
     {

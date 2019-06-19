@@ -47,4 +47,44 @@ class ActivitesEnfantsRepository extends ServiceEntityRepository
         ;
     }
     */
+
+
+    // parent verifiant toutes les activites  où sont inscrit ses enfant
+    // amelioration à faire  via date et select
+    public function findAllEnfantsActiviteEnfantByIdUserParent(int $id)
+    {
+        return $this->createQueryBuilder('a')
+        ->join('a.enfants','enf')
+        ->addSelect('enf')
+        ->join('enf.parents','par')
+        ->addSelect('par')
+        ->andWhere('par.utilisateur = :val')
+        ->setParameter('val',$id)
+        ->getQuery()
+        ->getResult()
+        ;
+    }
+
+
+    // administrateur verifiant tous les enfants inscrits dans une activité d'une association lui  apparetenant
+        // amélioration à faire  via date et select
+    public function findAllEnfantsInActiviteByIdActivite(int $activite_id, int $user_id)
+    {
+        return $this->createQueryBuilder('a')
+        ->join('a.enfants','enf')
+        ->join('a.activtes','acti')
+        ->addSelect('acti')
+        ->andWhere('acti.id = :value')
+        ->setParameter('value',$activite_id)
+        ->join('acti.associations','asso')
+        ->addSelect('asso')
+        ->join('asso.administrateurs','admin')
+        ->addSelect('admin')
+        ->andWhere('admin.users = :userid')
+        ->setParameter('userid',$user_id)
+        ->getQuery()
+        ->getResult()
+        ;
+
+    }
 }

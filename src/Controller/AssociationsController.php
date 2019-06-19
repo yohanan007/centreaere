@@ -32,7 +32,7 @@ class AssociationsController extends AbstractController
 
     /**
      * @Route("/", name="associations_index", methods={"GET"})
-     * @IsGranted("ROLE_USER_ADMIN",message="vous n'êtes pas authorisé")
+     * 
      */
     public function index(AssociationsRepository $associationsRepository): Response
     {
@@ -51,6 +51,13 @@ class AssociationsController extends AbstractController
             return $this->render('associations/index.html.twig', [
                 'associations' => $associationsRepository->findAll(),
             ]); 
+        }elseif (in_array("USER_ROLE_PARENT",$user->getRoles())) {
+            return $this->render('associations/index.html.twig',[
+                'associations' => $associationsRepository->findByUserIdRoleParent($user->getId())
+            ]);
+            
+        }else {
+            return $this->redirectToRoute('homepage');
         } 
         
     }
@@ -85,19 +92,35 @@ class AssociationsController extends AbstractController
     /**
      * @Route("/{id}", name="associations_show", methods={"GET"})
      */
-    public function show(Associations $association,$id): Response
+    public function show(AssociationsRepository $associationsRepository, Associations $association,$id): Response
     {
         // role_user_admin
         $user = $this->getUser();
         $user_id = $user->getId();
         if(in_array('ROLE_USER_ADMIN',$user->getRoles()))
         {
-            
+            if ($associationsRepository->findbyidUserAdministrateurAndIdAssociation($user_id, $id)[0]->getId() == $id)
+            {
+                $inscris = true;
+            }else{
+                $inscris = false;
+            }
+
             return $this->render('associations/show.html.twig', [
-                'association' => $association,
+                'association' => $association,'inscris'=>$inscris,
             ]); 
         }
-        else{
+        elseif (in_array('USER_ROLE_PARENT',$user->getRoles())){
+            if ($associationsRepository->findbyidUserParentAndIdAssociation($user_id, $id)[0]->getId() == $id)
+            {
+                $inscris = true;
+            }else{
+                $inscris = false;
+            }
+                return $this->render('associations/show.html.twig', [
+                    'association' => $association,'inscris'=>$inscris,
+                ]); 
+        }else {
             return  $this->redirectToRoute('homepage');
         }
     }

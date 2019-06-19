@@ -3,40 +3,67 @@
 {% block title %}Associations{% endblock %}
 
 {% block body %}
-    <h1>Associations</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ association.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom_association</th>
-                <td>{{ association.nomAssociation }}</td>
-            </tr>
-            <tr>
-                <th>Email_association</th>
-                <td>{{ association.emailAssociation }}</td>
-            </tr>
-            <tr>
-                <th>Telephone_association</th>
-                <td>{{ association.telephoneAssociation }}</td>
-            </tr>
-            <tr>
-                <th>Adresse_association</th>
-                <td>{{ association.adresseAssociation }}</td>
-            </tr>
-            <tr>
-                <th>Ville_association</th>
-                <td>{{ association.villeAssociation }}</td>
-            </tr>
-        </tbody>
-    </table>
+{#affichage des infos de l'association #}
+    <div class="container mt-5 p-5 border border-light">
+    <h4>Associations id:<i>{{ association.id }}</i> </h4>
 
-    <a href="{{ path('associations_index') }}">back to list</a>
+  
 
-    <a href="{{ path('associations_edit', {'id': association.id}) }}">edit</a>
+    <div class="card text-white bg-dark m-3 p-3 border border-secondary " style="width: 30rem">
+        <div class="card-header text-uppercase">information</div>
+        <div class="card-body">
+            <p class="text-capitalize"> {{ association.nomAssociation }}</p>
+            <p>{{ association.adresseAssociation }} {{ association.villeAssociation }}</p>
+            <p>{{ association.telephoneAssociation }}</p>
+            <p>{{ association.emailAssociation }}</p>
+            
+        </div>
+        {% if inscris and is_granted("ROLE_USER_ADMIN") %}
+        <div class="card-body text-dark bg-light">
+            
+    <a href="{{ path('associations_index') }}" class="btn btn-secondary">back to list</a>
 
-    {{ include('associations/_delete_form.html.twig') }}
+    <a href="{{ path('associations_edit', {'id': association.id}) }}" class="btn btn-secondary">edit</a>
+
+   
+        </div>
+        <div class="card-body text-dark bg-light ">
+           {{ include('associations/_delete_form.html.twig') }}  
+        </div>
+        {% endif %}
+    </div>
+    <hr> 
+
+    {# affichage des activites de l'association #}
+
+    {# activites à restreindre en back selon date #}
+
+
+    {% if inscris == true %}
+<ul class="list-group">
+    {% for var in association.activites %}
+
+       <li class="list-group-item">  <a href="{{path("activites_show",{'id':var.id })}}">{{ var.nomActivite }} </a>-  type activite : {{ var.typeactivites.nomtype }}
+
+             {# si id typeactivites est = 2 alors on est dans le cadre d'une activité journaliére  #}
+       {% if var.typeactivites.id == 1 %}
+            {% for varjournalier in var.journaliers %}
+         <p>debut :   {{ varjournalier.dateDeDebutJournalier ? varjournalier.dateDeDebutJournalier|date('Y-m-d H:i:s') : '' }}</p> 
+
+         <p>fin :  {{ varjournalier.dateFinJournalier ? varjournalier.dateFinJournalier|date('Y-m-d H:i:s') : '' }}</p> 
+            {% endfor %}
+            {# si id typeactivites est = 2 alors on est dans le cadre d'une activité evenementiel #}
+       {% elseif var.typeactivites.id == 2 %}
+            {% for varEvenementiel in var.evenementiels %}
+        <p>date :  {{ varEvenementiel.dateEvenementiel ? varEvenementiel.dateEvenementiel|date('Y-m-d H:i:s') : '' }}</p>   
+            {% endfor %}
+       {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endif %}
+    <hr>
+
+</div>
 {% endblock %}

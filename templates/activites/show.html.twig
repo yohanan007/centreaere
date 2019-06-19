@@ -3,24 +3,47 @@
 {% block title %}Activites{% endblock %}
 
 {% block body %}
-    <h1>Activites</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ activite.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom_activite</th>
-                <td>{{ activite.nomActivite }}</td>
-            </tr>
-        </tbody>
-    </table>
+{# phase affichage administrateur , on fera attention aux autre rôle dans la suite, quitte à changer les requêtes  #}
+{# on ne fait pas encore attention aux propriétés #}
+{# problême :  reflexion inscritpion que sur enfant, adulte et activite ?  #}
+    <h1>Activites {{ activite.id }}</h1>
 
-    <a href="{{ path('activites_index') }}">back to list</a>
 
-    <a href="{{ path('activites_edit', {'id': activite.id}) }}">edit</a>
+    <div class="container bg-secondary m-5 p-3 ">
+        <div class="card text-dark bg-light border border-dark m-5 p-5">
+            <div class="card-header">
+                    <h5 class="text-uppercase">{{ activite.nomActivite }}</h5>
+            </div>
+            <div class="card-body">
+                  <p><b>Type ativite : </b> <i>{{ activite.typeactivites.nomtype }}</i></p> 
+                        {% for var in activite.journaliers %}
 
-    {{ include('activites/_delete_form.html.twig') }}
+                        <p><b>Date de debut :</b> {{var.dateDeDebutJournalier ? var.dateDeDebutJournalier|date('Y-m-d H:i:s') : '' }}</p>
+                        <p><b>Date de Fin :</b> {{var.dateFinJournalier ? var.dateFinJournalier|date('Y-m-d H:i:s') : '' }}</p>
+
+                    {% endfor %}
+                    <ul class="list-group">
+                    {% for varjour  in activite.jourActivites %}
+                            <li class="list-group-item">
+                                {{ varjour.jour ? varjour.jour|date('Y-m-d H:i:s') : ''  }}
+                                <br><b>liste enfant inscrits : </b>
+                                {# attention nom prise en compte de doublon dans inscription refaire validation #}
+                                    {% for item in varjour.activitesEnfants %}
+                                         <br> <a href="{{ path("enfants_show",{'id': item.enfants.id}) }} ">{{ item.enfants.nomenfant }} {{ item.enfants.prenomenfant }} </a>
+                                    {% endfor %}
+                            </li>
+                    {% endfor %}
+                    </ul>
+            </div>
+            <div class="card-body">
+                <p>
+                <a href="{{ path('activites_index') }}" class="btn btn-secondary">back to list</a>
+
+                    {% if is_granted("ROLE_USER_ADMIN ")%}<a href="{{ path('activites_edit', {'id': activite.id}) }}" class="btn btn-secondary ">edit</a>{% endif %}
+                </p>
+                {% if is_granted("ROLE_USER_ADMIN ")%}    {{ include('activites/_delete_form.html.twig') }} {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -13,7 +13,15 @@
    <hr>
     <h2 class="card-text" style="text-transform: uppercase">site de gestion d'animation</h2>
     <hr>
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+    <h4> Vous êtes connecté en tant que : </h4>
+    <h5>{{ app.user.username }} </h5>
+    <hr>
+    <a  href="{{ url('app_logout')}}" class="btn btn-warning"> deconnexion</a>
+    <hr>
+    {% else %}
     <a href="{{ url('app_login') }}" class="btn btn-primary">identification</a>
+    {% endif %}
   </div>
 </div>
 

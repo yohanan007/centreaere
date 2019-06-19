@@ -9,29 +9,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
  * @Route("/activite/enfants")
+ * @IsGranted("IS_AUTHENTICATED_FULLY")
  */
 class ActivitesEnfantsController extends AbstractController
 {
     /**
      * @Route("/", name="activites_enfants_index", methods={"GET"})
      */
-    public function index(ActivitesEnfantsRepository $activitesEnfantsRepository): Response
+    public function index(ActivitesEnfantsRepository $activitesEnfantsRepository, Request $request): Response
     {
         $user = $this->getUser();
         if(in_array("USER_ROLE_PARENT",$user->getRoles()))
         {
             #role parent 
            return $this->render('activites_enfants/index.html.twig', [
-            'activites_enfants' => $activitesEnfantsRepository->findAll(),
+            'activites_enfants' => $activitesEnfantsRepository->findAllEnfantsActiviteEnfantByIdUserParent($user->getId()),
         ]); 
         }elseif (in_array("USER_ROLE_ADMINISTRATEUR")) {
             # code...role administrateur
+            if($request->get('activiteId'))
+            {
+                $id_activite = $request->get('activiteId');
             return $this->render('activites_enfants/index.html.twig', [
-                'activites_enfants' => $activitesEnfantsRepository->findAll(),
+                'activites_enfants' => $activitesEnfantsRepository->findAllEnfantsInActiviteByIdActivite($id_activite,$user->getId()),
             ]);
+            }else{
+
+            }
+            
         }else {
             return $this->redirectToRoute('homepage');
         }

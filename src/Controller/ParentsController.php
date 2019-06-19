@@ -40,12 +40,15 @@ class ParentsController extends AbstractController
             'parents' => $parentsRepository->findAll(),
         ]); 
         }elseif (in_array("ROLE_USER_ADMIN",$user->getRoles())) {
-            // recuperation de l'id courant de l'utilisateur 
-            $id_user = $user->getId();
+         
             return $this->render('parents/index.html.twig', [
-                'parents' => $parentsRepository->find($id_user),
+                'parents' => $parentsRepository->findAllParentByIdUser($user->getId()),
             ]); 
-        }else {
+        }elseif (in_array("USER_ROLE_PARENT",$user->getRoles())) {
+            $id_parent = $parentsRepository->findParentByIdUser($user->getId())[0]->getId();
+            return $this->redirectToRoute('parents_show',array('id'=>$id_parent));
+        }
+        else{
              return  $this->redirectToRoute('homepage');
         }
     }

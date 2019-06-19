@@ -63,7 +63,7 @@ class ActivitesController extends AbstractController
             var_dump($evenementiel->first());
             if($journalier->first() != false)
             {
-                var_dump('journalier');
+                
                 
                 foreach ($journalier as $item) {
 
@@ -110,7 +110,7 @@ class ActivitesController extends AbstractController
 
                 
             }elseif ($evenementiel->first() != false) {
-                var_dump('evenementiel');
+              
                 foreach ($evenementiel as $item) {
                     $item->setActivites($activite);
                     $entityManager->persist($item);

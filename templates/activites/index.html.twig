@@ -20,7 +20,7 @@
                 <td>{{ activite.nomActivite }}</td>
                 <td>
                     <a href="{{ path('activites_show', {'id': activite.id}) }}">show</a>
-                    <a href="{{ path('activites_edit', {'id': activite.id}) }}">edit</a>
+                {% if is_granted("ROLE_USER_ADMIN")%}    <a href="{{ path('activites_edit', {'id': activite.id}) }}">edit</a>{% endif %}
                 </td>
             </tr>
         {% else %}
@@ -31,5 +31,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('activites_new') }}">Create new</a>
+    {% if is_granted("ROLE_USER_ADMIN")%}   <a href="{{ path('activites_new') }}">Create new</a> {% endif %}
 {% endblock %}
